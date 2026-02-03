@@ -8,18 +8,38 @@ import yaml
 
 from src.models.post import Post
 
+SLUG_PATTERN = re.compile(r'^[a-z0-9]+(?:-[a-z0-9]+)*$')
+ALLOWED_PROTOCOLS = ['http', 'https', 'mailto']
+
 ALLOWED_TAGS = [
     'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
     'ul', 'ol', 'li', 'a', 'strong', 'em', 'code', 'pre',
     'blockquote', 'img', 'br', 'hr', 'table', 'thead',
     'tbody', 'tr', 'th', 'td'
 ]
+def filter_url(tag: str, name: str, value: str) -> bool:
+    """Only allow safe URL protocols."""
+    if name in ('href', 'src'):
+        if not value or value.startswith('/') or value.startswith('#'):
+            return True
+        protocol = value.split(':')[0].lower() if ':' in value else ''
+        return protocol in ALLOWED_PROTOCOLS
+    return True
+
+
 ALLOWED_ATTRS = {
-    'a': ['href', 'title'],
-    'img': ['src', 'alt', 'title'],
+    'a': filter_url,
+    'img': filter_url,
     'code': ['class'],
     'pre': ['class']
 }
+
+
+def validate_slug(slug: str) -> str:
+    """Validate slug contains only safe characters."""
+    if not slug or not SLUG_PATTERN.match(slug):
+        raise ValueError(f"Invalid slug '{slug}': must be lowercase alphanumeric with hyphens")
+    return slug
 
 
 def extract_frontmatter(text: str) -> tuple[dict, str]:
@@ -54,7 +74,8 @@ def parse_post(filepath: Path) -> Post:
     else:
         post_date = date_value
 
-    slug = frontmatter.get('slug', filepath.stem)
+    raw_slug = frontmatter.get('slug', filepath.stem)
+    slug = validate_slug(raw_slug)
     html_content = convert_markdown(content)
 
     return Post(
