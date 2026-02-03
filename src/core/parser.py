@@ -2,10 +2,24 @@ import re
 from datetime import datetime
 from pathlib import Path
 
+import bleach
 import markdown
 import yaml
 
 from src.models.post import Post
+
+ALLOWED_TAGS = [
+    'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'ul', 'ol', 'li', 'a', 'strong', 'em', 'code', 'pre',
+    'blockquote', 'img', 'br', 'hr', 'table', 'thead',
+    'tbody', 'tr', 'th', 'td'
+]
+ALLOWED_ATTRS = {
+    'a': ['href', 'title'],
+    'img': ['src', 'alt', 'title'],
+    'code': ['class'],
+    'pre': ['class']
+}
 
 
 def extract_frontmatter(text: str) -> tuple[dict, str]:
@@ -22,8 +36,9 @@ def extract_frontmatter(text: str) -> tuple[dict, str]:
 
 
 def convert_markdown(content: str) -> str:
-    """Convert markdown content to HTML."""
-    return markdown.markdown(content, extensions=['fenced_code', 'tables'])
+    """Convert markdown content to sanitized HTML."""
+    html = markdown.markdown(content, extensions=['fenced_code', 'tables'])
+    return bleach.clean(html, tags=ALLOWED_TAGS, attributes=ALLOWED_ATTRS)
 
 
 def parse_post(filepath: Path) -> Post:
