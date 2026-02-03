@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Latest Posts</h1>
+<ul class="post-list">
+    {% for post in posts %}
+    <li class="post-item">
+        <a href="{{ post.slug }}.html">{{ post.title }}</a>
+        <time datetime="{{ post.date }}">{{ post.date.strftime('%B %d, %Y') }}</time>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

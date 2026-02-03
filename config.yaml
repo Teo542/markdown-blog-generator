@@ -1,0 +1,9 @@
+# Site Configuration
+site_name: "My Blog"
+base_url: "/"
+
+# Directory paths
+content_dir: "content"
+output_dir: "dist"
+static_dir: "static"
+templates_dir: "templates"
