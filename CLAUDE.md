@@ -1,15 +1,33 @@
 # Markdown Blog Generator - Project Rules
 
-## Project Status: ~50% Complete
+## Project Status: 95% Complete (Feature Complete)
 
-### Done
+### Completed
 - [x] Core SSG engine (Markdown → HTML)
 - [x] Security (XSS, path traversal, URL filtering)
 - [x] Dark theme CSS with mobile responsive
-- [x] Development server
+- [x] Tags system with individual tag pages
+- [x] Archive page (posts grouped by year)
+- [x] Pagination
+- [x] Reading time estimates
+- [x] Draft support (publish: true/false)
+- [x] RSS feed generation
+- [x] Sitemap.xml generation
+- [x] Meta tags (Open Graph, Twitter Cards)
+- [x] Client-side search
+- [x] About page & 404 page
+- [x] Syntax highlighting (Prism.js)
+- [x] Social links footer
+- [x] README documentation
+- [x] CLI commands (build, new, watch, deploy)
+- [x] Admin panel (web UI)
+- [x] Image upload support
 
-### Not Done
-- [ ] Real blog features (see Roadmap below)
+### Not Done (Optional Polish)
+- [ ] Test suite
+- [ ] Related posts
+- [ ] Comments system
+- [ ] Analytics placeholder
 
 ---
 
@@ -17,9 +35,11 @@
 
 ### Commands
 ```bash
-python main.py          # Build site to dist/
-python serve.py         # Dev server at localhost:8000
-python serve.py --network  # Mobile testing
+python main.py              # Build site
+python main.py new "Title"  # Create new post (draft)
+python main.py watch        # Auto-rebuild on changes
+python main.py deploy       # Push to GitHub Pages
+python main.py admin        # Web admin panel (localhost:5000)
 ```
 
 ### Content Format
@@ -28,76 +48,64 @@ python serve.py --network  # Mobile testing
 title: Post Title
 date: 2026-01-01
 slug: url-slug
+tags: [python, tutorial]
+publish: true
 ---
 Markdown content...
 ```
 
 ### Directory Structure
 ```
-content/        # Markdown posts
-templates/      # Jinja2 (base, index, post)
-static/css/     # Stylesheets
-dist/           # Output (git-ignored)
-src/core/       # Parser, Generator
-src/models/     # Post dataclass
-src/utils/      # File handling
+content/           # Markdown posts + images/
+templates/         # Jinja2 templates
+static/css/        # Stylesheets
+dist/              # Output (git-ignored)
+src/
+  core/            # Generator, parser, feed, sitemap
+  models/          # Post dataclass
+  utils/           # File handling
+  cli/             # CLI commands (scaffold, watch, deploy)
+  admin/           # Flask admin panel
 ```
 
 ---
 
-## Roadmap
+## Architecture
 
-### Phase 1: Core Blog Features (High Priority)
-- [ ] Categories/tags system
-- [ ] Archive page (posts by date)
-- [ ] Pagination
-- [ ] Reading time estimate
-- [ ] Draft support (publish: true/false)
+```
+Input (content/*.md)
+    ↓
+Parser (YAML frontmatter + Markdown)
+    ↓
+Generator (Jinja2 templates)
+    ↓
+Output (dist/*.html + RSS + sitemap + search.json)
+```
 
-### Phase 2: Discovery & SEO (High Priority)
-- [ ] RSS/Atom feed
-- [ ] sitemap.xml
-- [ ] Meta tags (og:image, twitter:card)
-- [ ] Search (client-side)
-
-### Phase 3: Content & Templates (Medium Priority)
-- [ ] About page
-- [ ] 404 page
-- [ ] Navigation menu
-- [ ] Social links footer
-- [ ] Code syntax highlighting
-
-### Phase 4: User Workflow (Medium Priority)
-- [ ] README documentation
-- [ ] Post scaffold command
-- [ ] Watch mode (auto-rebuild)
-
-### Phase 5: Polish (Low Priority)
-- [ ] Test suite
-- [ ] Related posts
-- [ ] Comments system
-- [ ] Analytics placeholder
-
----
-
-## Files to Create
-- `src/core/feed.py` - RSS generation
-- `src/core/sitemap.py` - Sitemap generation
-- `templates/archive.html`
-- `templates/category.html`
-- `templates/404.html`
-
-## Files to Modify
-- `src/models/post.py` - Add tags, category, draft, reading_time
-- `src/core/parser.py` - Parse new frontmatter
-- `src/core/generator.py` - Generate feeds, sitemap, archives
-- `templates/base.html` - Nav, meta tags
-- `config.yaml` - Social links, posts_per_page
+### Key Files
+| File | Purpose |
+|------|---------|
+| `main.py` | CLI entry point |
+| `src/core/generator.py` | Build pipeline |
+| `src/core/parser.py` | Markdown + frontmatter parsing |
+| `src/admin/app.py` | Flask admin panel |
+| `config.yaml` | Site configuration |
 
 ---
 
 ## Security Reminders
-- Slugs: only `a-z0-9` and hyphens
+- Slugs: only `a-z0-9` and hyphens (validated)
 - HTML: sanitized with bleach whitelist
 - URLs: only http/https/mailto protocols
 - Server: localhost by default
+- No user input goes directly to filesystem paths
+
+---
+
+## Lessons Learned
+
+1. **Users need GUIs** - CLI-only tools feel incomplete; admin panel made it usable
+2. **Phased development works** - Core → Features → UX → Polish prevents scope creep
+3. **Ship working software** - 90% done and usable beats 100% done never
+4. **Windows file locking** - Can't modify files while servers run from them
+5. **Static sites are powerful** - No database, no hacking risk, free hosting
