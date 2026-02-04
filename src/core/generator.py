@@ -209,10 +209,17 @@ class Generator:
         self.file_ops.write_file(output_path, html)
 
     def _generate_feed(self, posts: list[Post]) -> None:
-        """Generate RSS feed."""
+        """Generate RSS feed and styled RSS page."""
         rss_content = generate_rss(posts, self.config)
         output_path = self.output_dir / 'feed.xml'
         self.file_ops.write_file(output_path, rss_content)
+
+        template = self.env.get_template('rss.html')
+        context = self._base_context()
+        context['posts'] = posts
+        html = template.render(**context)
+        rss_page_path = self.output_dir / 'rss.html'
+        self.file_ops.write_file(rss_page_path, html)
 
     def _generate_sitemap(self, posts: list[Post], tags: list[str]) -> None:
         """Generate sitemap.xml."""

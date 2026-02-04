@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}RSS Feed - {{ site_name }}{% endblock %}
+
+{% block content %}
+<article class="rss-page">
+    <h1>RSS Feed</h1>
+
+    <div class="rss-info">
+        <p><strong>What is RSS?</strong></p>
+        <p>RSS (Really Simple Syndication) lets you subscribe to this blog using a feed reader app.
+        You'll get notified whenever new posts are published, without needing to check the website manually.</p>
+
+        <div class="rss-subscribe">
+            <p><strong>Subscribe:</strong></p>
+            <code class="rss-url">{{ base_url }}feed.xml</code>
+            <p class="rss-hint">Copy this URL into your RSS reader (Feedly, Inoreader, Thunderbird, etc.)</p>
+        </div>
+    </div>
+
+    <h2>Recent Posts</h2>
+    <div class="rss-preview">
+        {% for post in posts[:5] %}
+        <div class="rss-item">
+            <a href="/{{ post.slug }}.html">{{ post.title }}</a>
+            <span class="rss-date">{{ post.date.strftime('%Y-%m-%d') }}</span>
+        </div>
+        {% endfor %}
+    </div>
+
+    <p class="rss-direct">
+        <a href="/feed.xml" class="rss-button">View Raw Feed (XML)</a>
+    </p>
+</article>
+{% endblock %}
