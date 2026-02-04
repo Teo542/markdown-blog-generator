@@ -13,10 +13,17 @@ def validate_path(path: Path, base: Path) -> bool:
 
 
 def clean_directory(path: Path) -> None:
-    """Remove all contents of a directory."""
+    """Remove all contents of a directory, preserving .git folder."""
     if path.exists():
-        shutil.rmtree(path)
-    path.mkdir(parents=True, exist_ok=True)
+        for item in path.iterdir():
+            if item.name == '.git':
+                continue
+            if item.is_dir():
+                shutil.rmtree(item)
+            else:
+                item.unlink()
+    else:
+        path.mkdir(parents=True, exist_ok=True)
 
 
 def copy_static_assets(src: Path, dest: Path) -> None:
