@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About | My Blog</title>
+    <meta name="description" content="A blog built with Markdown Blog Generator">
+    <meta name="author" content="Blog Author">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="My Blog">
+    <meta property="og:description" content="A blog built with Markdown Blog Generator">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="/">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="My Blog RSS" href="/feed.xml">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/index.html" class="site-title">My Blog</a>
+            <div class="nav-links">
+                <a href="/index.html">Home</a>
+                <a href="/archive.html">Archive</a>
+                <a href="/tags.html">Tags</a>
+                <a href="/about.html">About</a>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
+                <div id="search-results"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        
+<article class="page">
+    <h1>About</h1>
+    <div class="page-content">
+        <h2>About This Blog</h2>
+<p>Welcome to my blog! This site is built with the <strong>Markdown Blog Generator</strong>, a custom static site generator written in Python.</p>
+<h3>Features</h3>
+<ul>
+<li>Fast static HTML pages</li>
+<li>Dark theme with responsive design</li>
+<li>Full-text search</li>
+<li>RSS feed for subscribers</li>
+<li>SEO-friendly with meta tags and sitemap</li>
+</ul>
+<h3>About Me</h3>
+<p>I'm a developer who enjoys writing about technology, programming, and creative projects.</p>
+<h3>Contact</h3>
+<p>Feel free to reach out through the social links in the footer.</p>
+    </div>
+</article>
+
+    </main>
+
+    <footer>
+        <div class="footer-links">
+            <a href="/feed.xml">RSS</a>
+            
+            <a href="https://github.com/Teo542">GitHub</a>
+        </div>
+        <p>Powered by Markdown Blog Generator</p>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script>
+    (function() {
+        const input = document.getElementById('search-input');
+        const results = document.getElementById('search-results');
+        let posts = [];
+
+        fetch('/search.json')
+            .then(r => r.json())
+            .then(data => posts = data)
+            .catch(() => {});
+
+        input.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            results.innerHTML = '';
+
+            if (query.length < 2) {
+                results.style.display = 'none';
+                return;
+            }
+
+            const matches = posts.filter(p =>
+                p.title.toLowerCase().includes(query) ||
+                p.excerpt.toLowerCase().includes(query) ||
+                p.tags.some(t => t.includes(query))
+            ).slice(0, 5);
+
+            if (matches.length) {
+                results.style.display = 'block';
+                matches.forEach(p => {
+                    const a = document.createElement('a');
+                    a.href = '/' + p.slug + '.html';
+                    a.textContent = p.title;
+                    results.appendChild(a);
+                });
+            } else {
+                results.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.search-container')) {
+                results.style.display = 'none';
+            }
+        });
+    })();
+    </script>
+</body>
+</html>
