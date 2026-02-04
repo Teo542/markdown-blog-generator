@@ -4,12 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{{ site_name }}{% endblock %}</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="description" content="{% block description %}{{ site_description }}{% endblock %}">
+    <meta name="author" content="{{ author }}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% block og_title %}{{ site_name }}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}{{ site_description }}{% endblock %}">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:url" content="{{ base_url }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary">
+    {% if twitter_handle %}<meta name="twitter:site" content="@{{ twitter_handle }}">{% endif %}
+
+    <!-- RSS Feed -->
+    <link rel="alternate" type="application/rss+xml" title="{{ site_name }} RSS" href="/feed.xml">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+    <!-- Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="index.html" class="site-title">{{ site_name }}</a>
+            <a href="/index.html" class="site-title">{{ site_name }}</a>
+            <div class="nav-links">
+                <a href="/index.html">Home</a>
+                <a href="/archive.html">Archive</a>
+                <a href="/tags.html">Tags</a>
+                <a href="/about.html">About</a>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search..." autocomplete="off">
+                <div id="search-results"></div>
+            </div>
         </nav>
     </header>
 
@@ -18,7 +50,63 @@
     </main>
 
     <footer>
+        <div class="footer-links">
+            <a href="/feed.xml">RSS</a>
+            {% if twitter_handle %}<a href="https://twitter.com/{{ twitter_handle }}">Twitter</a>{% endif %}
+            {% if github_handle %}<a href="https://github.com/{{ github_handle }}">GitHub</a>{% endif %}
+        </div>
         <p>Powered by Markdown Blog Generator</p>
     </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script>
+    (function() {
+        const input = document.getElementById('search-input');
+        const results = document.getElementById('search-results');
+        let posts = [];
+
+        fetch('/search.json')
+            .then(r => r.json())
+            .then(data => posts = data)
+            .catch(() => {});
+
+        input.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            results.innerHTML = '';
+
+            if (query.length < 2) {
+                results.style.display = 'none';
+                return;
+            }
+
+            const matches = posts.filter(p =>
+                p.title.toLowerCase().includes(query) ||
+                p.excerpt.toLowerCase().includes(query) ||
+                p.tags.some(t => t.includes(query))
+            ).slice(0, 5);
+
+            if (matches.length) {
+                results.style.display = 'block';
+                matches.forEach(p => {
+                    const a = document.createElement('a');
+                    a.href = '/' + p.slug + '.html';
+                    a.textContent = p.title;
+                    results.appendChild(a);
+                });
+            } else {
+                results.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('click', e => {
+            if (!e.target.closest('.search-container')) {
+                results.style.display = 'none';
+            }
+        });
+    })();
+    </script>
 </body>
 </html>

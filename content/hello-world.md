@@ -2,6 +2,8 @@
 title: Hello World
 date: 2026-02-03
 slug: hello-world
+tags: [python, tutorial, getting-started]
+publish: true
 ---
 
 Welcome to my new blog! This is my first post using the **Markdown Blog Generator**.

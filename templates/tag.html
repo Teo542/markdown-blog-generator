@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ tag | capitalize }} | {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>Posts tagged "{{ tag }}"</h1>
+
+<ul class="post-list">
+    {% for post in posts %}
+    <li class="post-item">
+        <h2><a href="/{{ post.slug }}.html">{{ post.title }}</a></h2>
+        <div class="post-meta">
+            <time datetime="{{ post.date }}">{{ post.date.strftime('%B %d, %Y') }}</time>
+            <span class="reading-time">{{ post.reading_time }} min read</span>
+        </div>
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="/tags.html" class="back-link">&larr; All tags</a>
+{% endblock %}

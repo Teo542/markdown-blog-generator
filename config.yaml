@@ -1,9 +1,19 @@
 # Site Configuration
 site_name: "My Blog"
+site_description: "A blog built with Markdown Blog Generator"
 base_url: "/"
+author: "Blog Author"
+twitter_handle: ""
+github_handle: "Teo542"
 
 # Directory paths
 content_dir: "content"
 output_dir: "dist"
 static_dir: "static"
 templates_dir: "templates"
+
+# Pagination
+posts_per_page: 10
+
+# Reading time (words per minute)
+reading_time_wpm: 200

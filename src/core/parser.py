@@ -42,6 +42,20 @@ def validate_slug(slug: str) -> str:
     return slug
 
 
+def estimate_reading_time(content: str, wpm: int = 200) -> int:
+    """Estimate reading time in minutes based on word count."""
+    words = len(content.split())
+    minutes = max(1, round(words / wpm))
+    return minutes
+
+
+def normalize_tags(tags: list) -> list[str]:
+    """Normalize tags to lowercase strings."""
+    if not tags:
+        return []
+    return [str(tag).lower().strip() for tag in tags if tag]
+
+
 def extract_frontmatter(text: str) -> tuple[dict, str]:
     """Extract YAML frontmatter and content from markdown text."""
     pattern = r'^---\s*\n(.*?)\n---\s*\n(.*)$'
@@ -78,10 +92,17 @@ def parse_post(filepath: Path) -> Post:
     slug = validate_slug(raw_slug)
     html_content = convert_markdown(content)
 
+    tags = normalize_tags(frontmatter.get('tags', []))
+    draft = not frontmatter.get('publish', True)
+    reading_time = estimate_reading_time(content)
+
     return Post(
         title=title,
         date=post_date,
         slug=slug,
         content=content,
-        html_content=html_content
+        html_content=html_content,
+        tags=tags,
+        draft=draft,
+        reading_time=reading_time
     )

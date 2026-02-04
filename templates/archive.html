@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Archive | {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>Archive</h1>
+
+{% for year in years %}
+<section class="archive-year">
+    <h2>{{ year }}</h2>
+    <ul class="archive-list">
+        {% for post in posts_by_year[year] %}
+        <li>
+            <time datetime="{{ post.date }}">{{ post.date.strftime('%b %d') }}</time>
+            <a href="/{{ post.slug }}.html">{{ post.title }}</a>
+            <span class="reading-time">{{ post.reading_time }} min</span>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+{% endfor %}
+
+<a href="/index.html" class="back-link">&larr; Back to home</a>
+{% endblock %}

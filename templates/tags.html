@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Tags | {{ site_name }}{% endblock %}
+
+{% block content %}
+<h1>Tags</h1>
+
+<ul class="tags-list">
+    {% for tag in tags %}
+    <li>
+        <a href="/tag/{{ tag }}.html" class="tag">
+            {{ tag }}
+            <span class="tag-count">({{ tag_counts[tag] }})</span>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+
+{% if not tags %}
+<p>No tags yet.</p>
+{% endif %}
+
+<a href="/index.html" class="back-link">&larr; Back to home</a>
+{% endblock %}

@@ -54,3 +54,17 @@ def list_markdown_files(path: Path) -> list[Path]:
     if not path.exists():
         return []
     return sorted(path.glob('*.md'))
+
+
+def copy_images(content_dir: Path, output_dir: Path) -> None:
+    """Copy images from content/images to output/images."""
+    images_src = content_dir / 'images'
+    images_dest = output_dir / 'images'
+
+    if not images_src.exists():
+        return
+
+    if images_dest.exists():
+        shutil.rmtree(images_dest)
+
+    shutil.copytree(images_src, images_dest, symlinks=False)

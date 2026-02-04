@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin{% endblock %} - Blog Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body>
+    <header class="admin-header">
+        <div class="header-left">
+            <a href="{{ url_for('dashboard') }}" class="logo">Blog Admin</a>
+        </div>
+        <div class="header-right">
+            <button id="build-btn" class="btn btn-secondary">Build</button>
+            <button id="deploy-btn" class="btn btn-primary">Deploy</button>
+        </div>
+    </header>
+
+    <main class="admin-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+
+    <script>
+    function showToast(message, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.className = 'toast' + (isError ? ' error' : ' success');
+        setTimeout(() => toast.className = 'toast hidden', 3000);
+    }
+
+    document.getElementById('build-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('build-btn');
+        btn.disabled = true;
+        btn.textContent = 'Building...';
+        try {
+            const res = await fetch('/build', { method: 'POST' });
+            const data = await res.json();
+            showToast(data.message, !data.success);
+        } catch (e) {
+            showToast('Build failed', true);
+        }
+        btn.disabled = false;
+        btn.textContent = 'Build';
+    });
+
+    document.getElementById('deploy-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('deploy-btn');
+        btn.disabled = true;
+        btn.textContent = 'Deploying...';
+        try {
+            const res = await fetch('/deploy', { method: 'POST' });
+            const data = await res.json();
+            showToast(data.message, !data.success);
+        } catch (e) {
+            showToast('Deploy failed', true);
+        }
+        btn.disabled = false;
+        btn.textContent = 'Deploy';
+    });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

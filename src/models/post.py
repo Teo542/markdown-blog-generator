@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 
@@ -9,3 +9,6 @@ class Post:
     slug: str
     content: str
     html_content: str
+    tags: list[str] = field(default_factory=list)
+    draft: bool = False
+    reading_time: int = 1
